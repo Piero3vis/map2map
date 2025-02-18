@@ -7,7 +7,7 @@ from .resample import Resampler
 
 
 class G(nn.Module):
-    def __init__(self, in_chan, out_chan, scale_factor=16,
+    def __init__(self, in_chan, out_chan, scale_factor=2,
                  chan_base=512, chan_min=64, chan_max=512, cat_noise=False,
                  **kwargs):
         super().__init__()

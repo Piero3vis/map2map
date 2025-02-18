@@ -24,10 +24,10 @@ def test(args):
         torch.backends.cudnn.benchmark = True
     else:  # CPU multithreading
         device = torch.device('cpu')
-
+        
         if args.num_threads is None:
-            args.num_threads = int(os.environ['SLURM_CPUS_ON_NODE'])
-
+            args.num_threads = 4  # Default to 4 threads
+            
         torch.set_num_threads(args.num_threads)
 
     print('pytorch {}'.format(torch.__version__))
@@ -103,23 +103,12 @@ def test(args):
 
             print('sample {} loss: {}'.format(i, loss.item()))
 
-            #if args.in_norms is not None:
-            #    start = 0
-            #    for norm, stop in zip(test_dataset.in_norms, np.cumsum(in_chan)):
-            #        norm = import_attr(norm, norms, callback_at=args.callback_at)
-            #        norm(input[:, start:stop], undo=True, **args.misc_kwargs)
-            #        start = stop
             if args.tgt_norms is not None:
                 start = 0
                 for norm, stop in zip(test_dataset.tgt_norms, np.cumsum(out_chan)):
                     norm = import_attr(norm, norms, callback_at=args.callback_at)
                     norm(output[:, start:stop], undo=True, **args.misc_kwargs)
-                    #norm(target[:, start:stop], undo=True, **args.misc_kwargs)
                     start = stop
 
-            #test_dataset.assemble('_in', in_chan, input,
-            #                      data['input_relpath'])
             test_dataset.assemble('_out', out_chan, output,
                                   data['target_relpath'])
-            #test_dataset.assemble('_tgt', out_chan, target,
-            #                      data['target_relpath'])
